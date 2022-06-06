@@ -3,7 +3,8 @@
 The problem statement was is to allow consumer to pass arbitary shell scripts to be executed against an RDBMS - 
 such as creating DB / users etc.
 
->Using Config as code allows us to pass a shell and mount it to a Job for achieving the purpose
+>Using ConfigMap as code allows to pass values as code that can be mounted as shell script in a Pod
+### [Using ConfigMaps as files from a Pod](https://kubernetes.io/docs/concepts/configuration/configmap/#using-configmaps-as-files-from-a-pod)
 
 ```
 Before you begin, download and run mysql 5.7
