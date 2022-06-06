@@ -1,0 +1,8 @@
+DB_HOST: "mysql.default.svc.cluster.local"
+DB_ROOT_USERNAME: "root"
+DB_ROOT_PASSWORD: "nimda"
+environment: "dev"
+db:
+  script: |
+      #!/bin/sh
+      echo 'please pass your multiline db setup scripts here...'

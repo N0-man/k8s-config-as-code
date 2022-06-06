@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bahmni-db-setup
+spec:
+  template:
+    spec:
+      volumes:
+      - name: db-scripts
+        configMap:
+          name: bahmni-db-scripts
+          defaultMode: 0777
+      containers:
+        - name: bahmni-db-setup
+          image: mysql:5.7
+          command: 
+            - "/bin/sh"
+            - "-c"
+            - "/usr/local/bin/db-scripts.sh"
+          # [ "/usr/local/bin/db-scripts.sh"]
+          # command: [ "/bin/db-scripts", "-c" ]
+          # args:
+          #   - echo starting;
+          #     mysql --host="${DB_HOST}" --user="${DB_ROOT_USERNAME}" --password="${DB_ROOT_PASSWORD}" -e "CREATE DATABASE IF NOT EXISTS ${OPENMRS_DB_NAME};";
+          #     mysql --host="${DB_HOST}" --user="${DB_ROOT_USERNAME}" --password="${DB_ROOT_PASSWORD}" -e "CREATE DATABASE IF NOT EXISTS nouman;";
+          #     mysql --host="${DB_HOST}" --user="${DB_ROOT_USERNAME}" --password="${DB_ROOT_PASSWORD}" -e "SHOW DATABASES;";
+          #     echo done;
+          volumeMounts:
+            - name: db-scripts
+              mountPath: /usr/local/bin
+          envFrom:
+            - secretRef:
+                name: db-credentials
+                optional: false
+      restartPolicy: Never
