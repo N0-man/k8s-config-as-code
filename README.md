@@ -25,37 +25,43 @@ CHART VERSION: 9.1.4
 APP VERSION: 8.0.29
 
 ** Please be patient while the chart is being deployed **
-
-Tip:
-
-  Watch the deployment status using the command: kubectl get pods -w --namespace default
-
-Services:
-
-  echo Primary: mysql.default.svc.cluster.local:3306
-
-Execute the following to get the administrator credentials:
-
-  echo Username: root
-  MYSQL_ROOT_PASSWORD=$(kubectl get secret --namespace default mysql -o jsonpath="{.data.mysql-root-password}" | base64 -d)
-
-To connect to your database:
-
-  1. Run a pod that you can use as a client:
-
-      kubectl run mysql-client --rm --tty -i --restart='Never' --image  docker.io/bitnami/mysql:5.7 --namespace default --env MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD --command -- bash
-
-  2. To connect to primary service (read/write):
-
-      mysql -h mysql.default.svc.cluster.local -uroot -p"$MYSQL_ROOT_PASSWORD"
 ```
 
-You can test the k8s job
+Test the k8s job with default db.script in values.yaml
 ```
 helm upgrade bahmni-db-setup bahmni-db-setup/ --install --wait
 ```
 
-You can uninstall using
+You can override the db.script with `bahmni-db-setup/db-scripts.sh`
+```
+DB_SCRIPT=$(cat bahmni-db-setup/db-scripts.sh) && helm upgrade bahmni-db-setup bahmni-db-setup/ --set db.script=$DB_SCRIPT --install --wait
+```
+
+Uninstall
 ```
 helm uninstall bahmni-db-setup
+```
+
+### To connect to your database:
+The DB is running on 
+Primary: mysql.default.svc.cluster.local:3306
+Username: root
+
+You can get the master password using
+```
+kubectl get secret --namespace default mysql -o jsonpath="{.data.mysql-root-password}" | base64 -d
+```
+1. Export root password
+```
+MYSQL_ROOT_PASSWORD=$(kubectl get secret --namespace default mysql -o jsonpath="{.data.mysql-root-password}" | base64 -d)
+```
+2. Run a pod that you can use as a client:
+
+```
+  kubectl run mysql-client --rm --tty -i --restart='Never' --image  docker.io/bitnami/mysql:5.7 --namespace default --env MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD --command -- bash
+```
+3. To connect to primary service (read/write):
+
+```
+  mysql -h mysql.default.svc.cluster.local -uroot -p"$MYSQL_ROOT_PASSWORD"
 ```
